@@ -1,0 +1,88 @@
+/*.imagem1{
+    width: 30%;
+}*/
+
+
+#divMorte{
+    filter:alpha(opacity=10);
+    opacity: 0.1;
+    -moz-opacity:0.1;
+    -webkit-opacity:0.1;
+}
+.inline-icon{
+    vertical-align: bottom;
+}
+.homeimg{
+    background-image: url('../img/bk5.jpg');
+    background-size: 100% 100%;
+    background-attachment: fixed;
+}
+#teste22{
+    padding-left: 10px;
+}
+#center{
+
+}
+.row{
+    text-align: center;
+    vertical-align: middle;
+}
+
+#dinheiro{
+    width: 100px;
+}
+#buss{
+    width: 180px;
+}
+
+.absolut-center{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: red;
+    color: white;
+    text-align: center;
+}
+nav{
+}
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+    margin-top: 3.5%;
+}
+
+.div-percentage {
+    position:relative;
+    margin:80px;
+    width:220px; height:220px;
+}
+.canvas-percentage {
+    display: block;
+    position:absolute;
+    top:0;
+    left:0;
+}
+.span-percentage {
+    color:#555;
+    display:block;
+    line-height:220px;
+    text-align:center;
+    width:220px;
+    font-family:sans-serif;
+    font-size:40px;
+    font-weight:100;
+    margin-left:5px;
+}
+
