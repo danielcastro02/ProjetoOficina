@@ -2,7 +2,7 @@
 class conexao{
     private $con;
     public function __construct() {
-        $this->con = mysqli_connect("200.132.17.18", "dcastro", "Class.7ufo", "oficina");
+        $this->con = mysqli_connect("localhost", "root", "", "oficina");
     }
     public function getCon(){
         return $this->con;
