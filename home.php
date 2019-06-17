@@ -105,7 +105,7 @@ if (!isset($_SESSION['id'])) {
                             </h5>
                         </div>
                         <?php
-                        if ($_SESSION['id'] == 11) {
+                        if ($_SESSION['id'] == 1 && false) {
                             ?>
                             <div class="card black white-text col s10 offset-s1 left-align z-depth-5">
                                 <h5>Sugestões<?php

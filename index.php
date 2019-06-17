@@ -47,7 +47,7 @@ if (isset($_SESSION['id'])) {
                                     <label for="password">Senha</label>
                                 </div>
                             </div>
-                            <a href="./Registros/registro.php" class="btn disabled black">Registre-se</a>
+                            <a href="./Registros/registro.php" class="btn black">Registre-se</a>
                             <input type="submit" name="btLogin" value="Confirmar" class="btn z-depth-5 black">
                         </div>
                     </form>
