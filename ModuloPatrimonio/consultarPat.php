@@ -75,13 +75,13 @@ include_once '../Modelo/Comentario_pat.php';
                     </form>
                 </div>
                 <div class="row">
-                    <a id="linkexportapdf" href="../Relatorios/exportarPats.php<?php
+                    <a id="linkexportapdf" href="./exportarPats.php<?php
                     if (isset($_GET['function'])) {
                         $patpesquisa = new patrimonio($_POST);
                         echo "?local=" . $patpesquisa->getLocalizacao() . "&nome=" . $patpesquisa->getNome();
                     }
                     ?>" class="btn black">Exportar em PDF</a>
-                    <a id="linkexportapdfetiquetas" href="../Relatorios/exportapatetiqueta.php<?php
+                    <a id="linkexportapdfetiquetas" href="./exportapatetiqueta.php<?php
                     if (isset($_GET['function'])) {
                         echo "?local=" . $patpesquisa->getLocalizacao() . "&nome=" . $patpesquisa->getNome();
                     }

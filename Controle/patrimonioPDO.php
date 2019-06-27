@@ -1,4 +1,3 @@
-
 <?php
 
 if (realpath('./index.php')) {

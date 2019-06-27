@@ -41,9 +41,6 @@ if (isset($_GET['local'])) {
     </div>";
 }
 
-
-
-
 include_once '../Controles/dados.php';
 $d = new dados();
 if (isset($_GET['local'])) {
@@ -85,8 +82,8 @@ if ($result->rowCount() > 0) {
         </tr>
   ";
         }
-        $desc = new descricao();
-        $desc = $descPDO->selectDescricaoId_descricao($pat->getId_desc());
+        $descresult = $descPDO->selectDescricaoId_descricao($pat->getId_desc());
+        $desc = new descricao($descresult->fetch());
         $htmlContent = $htmlContent . "
             <tr>
             <td class='pat'>" . $pat->getPat() . "</td>
@@ -111,37 +108,3 @@ try {
     $formatter = new ExceptionFormatter($e);
     echo $formatter->getHtmlMessage();
 }
-?>
-<!--<body style="width: 720px; border: solid black 1px">
-    
-    <style>
-        table{
-            width: 100%
-        }
-        .pat{
-            width: 10%;
-        }
-        .nome{
-            width: 15%;
-        }
-        .desc{
-            width: 50%
-        }
-        .local{
-            width: 25%
-        }
-    </style>
-    <div style="margin-left: 20px; margin-top: 15px">
-        <h3>Relatório Patrimônios</h3>
-    </div>
-    <table border="1" cellspacing="0" cellpadding="0">
-        <tr>
-            <th class="pat">Patrimônio</th>
-            <th class="nome">Nome</th>
-            <th class="desc">Descrição</th>
-            <th class="local">Localização</th>
-        </tr>
-    </table>
-</body>
-
--->
