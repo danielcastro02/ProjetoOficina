@@ -2,7 +2,7 @@
 
 class descricao{
 
-private $id_descricao;
+private $id;
 private $nome;
 private $descricao;
 
@@ -26,12 +26,12 @@ public function __construct() {
         }
     }
 
-     public function getId_descricao(){
-         return $this->id_descricao;
+     public function getId(){
+         return $this->id;
      }
 
-     function setId_descricao($id_descricao){
-          $this->id_descricao = $id_descricao;
+     function setId($id){
+          $this->id = $id;
      }
 
      public function getNome(){

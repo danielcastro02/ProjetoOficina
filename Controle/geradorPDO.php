@@ -33,7 +33,7 @@ class geradorPDO {
     public function gerarTabela() {
 
         $semente = new gerador($_POST);
-        $con = new conexao();
+        $con = new conexaoPDO();
         $pdo = $con->getConexao();
         $att = $semente->getAtributo();
         $tipos = $semente->getTipo();

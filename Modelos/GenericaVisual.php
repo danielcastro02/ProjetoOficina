@@ -25,11 +25,6 @@ if (!isset($_SESSION['id'])) {
 <?php
 include_once '../Modelos/navGeral.php';
 ?>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $(".button-collapse").sideNav();
-        });
-    </script>
     <main>
 
 

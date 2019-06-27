@@ -1,5 +1,5 @@
 <?php
-    class conexao {
+    class conexaoPDO {
                
         public function getConexao(){
          

@@ -1,5 +1,11 @@
 <?php
 require '../vendor/autoload.php';
+include_once '../Controle/patrimonioPDO.php';
+include_once '../Modelo/Patrimonio.php';
+include_once '../Modelo/Descricao.php';
+include_once '../Controle/descricaoPDO.php';
+$patPDO = new PatrimonioPDO();
+$descPDO = new DescricaoPDO();
 
 use Spipu\Html2Pdf\Html2Pdf;
 use Spipu\Html2Pdf\Exception\Html2PdfException;
@@ -28,8 +34,10 @@ $htmlContent = "<page backtop='40px'>
         <h3>Relatório Patrimônios</h3>
     </div>";
 if (isset($_GET['local'])) {
-    $htmlContent = $htmlContent."<div style='margin-left: 20px; margin-top: 15px'>
-        <h4>Resultado para Local: ".$_GET['local']."  Pat: ". $_GET['nome']."</h4>
+    $patBusca = new patrimonio($_GET);
+    $patBusca->setLocalizacao($_GET['local']);
+    $htmlContent = $htmlContent . "<div style='margin-left: 20px; margin-top: 15px'>
+        <h4>Resultado para Local: " . $patBusca->getLocalizacao() . "  Pat: " . $patBusca->getNome() . "</h4>
     </div>";
 }
 
@@ -39,18 +47,19 @@ if (isset($_GET['local'])) {
 include_once '../Controles/dados.php';
 $d = new dados();
 if (isset($_GET['local'])) {
-    $result = $d->buscarPats($_GET['local'], $_GET['nome']);
+    $result = $patPDO->selectLocalNome($patBusca);
 } else {
-    $result = $d->selectPats();
+    $result = $patPDO->selectPatrimonio();
 }
 $local = null;
-if (mysqli_num_rows($result) > 0) {
-    while ($row = mysqli_fetch_assoc($result)) {
-         if($local==null){
-             $local= $row['localizacao'];
-             $htmlContent = $htmlContent . "
+if ($result->rowCount() > 0) {
+    while ($row = $result->fetch()) {
+        $pat = new patrimonio($row);
+        if ($local == null) {
+            $local = $pat->getLocalizacao();
+            $htmlContent = $htmlContent . "
                  
-                     <page_header><h4>".$local."</h4></page_header>
+                     <page_header><h4>" . $local . "</h4></page_header>
     <table border='1' cellspacing='0' cellpadding='0'>
         <tr>
             <th class='pat'>Patrimônio</th>
@@ -59,14 +68,14 @@ if (mysqli_num_rows($result) > 0) {
             <th class=' local'>Localização</th>
         </tr>
   ";
-         }
-         if($local!=$row['localizacao']){
-             $local= $row['localizacao'];
-             $htmlContent = $htmlContent . "
+        }
+        if ($local != $pat->getLocalizacao()) {
+            $local = $pat->getLocalizacao();
+            $htmlContent = $htmlContent . "
                  </table>
                  </page>
                  <page backtop='40px'>
-                 <page_header><h4>".$local."</h4></page_header>
+                 <page_header><h4>" . $local . "</h4></page_header>
     <table border='1' cellspacing='0' cellpadding='0'>
         <tr>
             <th class='pat'>Patrimônio</th>
@@ -75,14 +84,15 @@ if (mysqli_num_rows($result) > 0) {
             <th class=' local'>Localização</th>
         </tr>
   ";
-         }
-        
+        }
+        $desc = new descricao();
+        $desc = $descPDO->selectDescricaoId_descricao($pat->getId_desc());
         $htmlContent = $htmlContent . "
             <tr>
-            <td class='pat'>" . $row['pat'] . "</td>
-            <td class='nome'>" . $row['nome'] . "</td>
-            <td class='desc'>" . $row['descricao'] . "</td>
-            <td class=' local'>" . $row['localizacao'] . "</td>
+            <td class='pat'>" . $pat->getPat() . "</td>
+            <td class='nome'>" . $pat->getNome() . "</td>
+            <td class='desc'>" . $desc->getDescricao() . "</td>
+            <td class=' local'>" . $pat->getLocalizacao() . "</td>
         </tr>";
     }
     $htmlContent = $htmlContent . "</table></page>";

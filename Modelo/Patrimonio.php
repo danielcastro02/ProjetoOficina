@@ -2,7 +2,6 @@
 
 class patrimonio{
 
-private $id_patrimonio;
 private $pat;
 private $nome;
 private $id_desc;
@@ -28,14 +27,6 @@ public function __construct() {
             }
         }
     }
-
-     public function getId_patrimonio(){
-         return $this->id_patrimonio;
-     }
-
-     function setId_patrimonio($id_patrimonio){
-          $this->id_patrimonio = $id_patrimonio;
-     }
 
      public function getPat(){
          return $this->pat;

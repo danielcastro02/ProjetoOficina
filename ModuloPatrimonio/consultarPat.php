@@ -5,7 +5,14 @@ if (!isset($_SESSION)) {
 if (!isset($_SESSION['id'])) {
     header("location: index.php");
 }
-include_once '../Controles/server.php';
+include_once '../Modelo/Patrimonio.php';
+include_once '../Modelo/Users.php';
+include_once '../Modelo/Descricao.php';
+include_once '../Controle/patrimonioPDO.php';
+include_once '../Controle/descricaoPDO.php';
+include_once '../Controle/usersPDO.php';
+include_once '../Controle/comentario_patPDO.php';
+include_once '../Modelo/Comentario_pat.php';
 ?>
 <!DOCTYPE html>
 <head>
@@ -19,13 +26,8 @@ include_once '../Controles/server.php';
     <?php
     include_once '../Modelos/navGeral.php';
     ?>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $(".button-collapse").sideNav();
-        });
-    </script>
     <main>
-        <a class="btn-floating btn-large waves-effect waves-light grey darken-2" href="../Registros/registroPat.php" style="position: fixed;
+        <a class="btn-floating btn-large waves-effect waves-light grey darken-2" href="./registroPat.php" style="position: fixed;
            right: 2%;
            bottom: 6%;"><i class="material-icons">add</i></a>
         <div class="row"></div>
@@ -37,10 +39,9 @@ include_once '../Controles/server.php';
 
                 </div>
                 <div class="row">
-                    <form class="input-field col s6 offset-s3" method="post" action="consultarPat.php?function=consultagv
-                          ">
+                    <form class="input-field col s6 offset-s3" method="post" action="consultarPat.php?function=consulta">
                         <div class="input-field col s4">
-                            <select id="selecionador" name="local"> 
+                            <select id="selecionador" name="localizacao"> 
                                 <option value="">Todos</option>
                                 <option value="Lab2">Lab2</option>
                                 <option value="Lab3">Lab3</option>
@@ -75,39 +76,35 @@ include_once '../Controles/server.php';
                 </div>
                 <div class="row">
                     <a id="linkexportapdf" href="../Relatorios/exportarPats.php<?php
-                    if (isset($_POST['btBuscarPat'])) {
-                        echo "?local=" . $_POST['local'] . "&nome=" . $_POST['nome'];
+                    if (isset($_GET['function'])) {
+                        $patpesquisa = new patrimonio($_POST);
+                        echo "?local=" . $patpesquisa->getLocalizacao() . "&nome=" . $patpesquisa->getNome();
                     }
                     ?>" class="btn black">Exportar em PDF</a>
                     <a id="linkexportapdfetiquetas" href="../Relatorios/exportapatetiqueta.php<?php
-                    if (isset($_POST['btBuscarPat'])) {
-                        echo "?local=" . $_POST['local'] . "&nome=" . $_POST['nome'];
+                    if (isset($_GET['function'])) {
+                        echo "?local=" . $patpesquisa->getLocalizacao() . "&nome=" . $patpesquisa->getNome();
                     }
                     ?>" class="btn black">Exportar PDF para etiquetas</a>
                 </div>
                 <div class="row" id="busca">
-                    <ul class="bordered striped collapsible popout grey lighten-2 left-align">
+                    <ul class="collapsible popout grey lighten-2 left-align">
                         <?php
-                        include_once '../Modelo/Patrimonio.php';
-                        include_once '../Modelo/Users.php';
-                        include_once '../Controle/patrimonioPDO.php';
-                        include_once '../Controle/usersPDO.php';
-                        include_once '../Controle/comentario_patPDO.php';
-                        include_once '../Modelo/Comentario_pat.php';
                         $patpdo = new PatrimonioPDO();
                         $comPDO = new Comentario_patPDO();
                         $userPDO = new UsersPDO();
-                        if (isset($_POST['btBuscarPat'])) {
-                            if ($_POST['local'] == "SalaProfessores") {
-                                $_POST['local'] = 'Sala Professores';
+                        $descPDO = new DescricaoPDO();
+                        if (isset($_GET['function'])) {
+                            if ($patpesquisa->getLocalizacao() == "SalaProfessores") {
+                                $patpesquisa->setLocalizacao('Sala Professores');
                             }
-                            if ($_POST['local'] == "MiniAuditorio") {
-                                $_POST['local'] = 'Mini Auditorio';
+                            if ($patpesquisa->getLocalizacao() == "MiniAuditorio") {
+                                $patpesquisa->setLocalizacao('Mini Auditorio');
                             }
-                            if ($_POST['local'] == "SalaProjetos") {
-                                $_POST['local'] = 'Sala Projetos';
+                            if ($patpesquisa->getLocalizacao() == "SalaProjetos") {
+                                $patpesquisa->setLocalizacao('Sala Projetos');
                             }
-                            $result = $d->buscarPats($_POST['local'], $_POST['nome']);
+                            $result = $patpdo->selectLocalNome($patpesquisa);
                         } else {
                             $result = $patpdo->selectPatrimonio();
                         }
@@ -115,6 +112,8 @@ include_once '../Controles/server.php';
                             if ($result->rowCount() > 0) {
                                 while ($row = $result->fetch()) {
                                     $patrimonio = new patrimonio($row);
+                                    $resDescricao = $descPDO->selectDescricaoId_descricao($patrimonio->getId_desc());
+                                    $descricao = new descricao($resDescricao->fetch());
                                     ?>
                                     <li class="collection-item">
                                         <div class="collapsible-header grey lighten-2">
@@ -130,8 +129,8 @@ include_once '../Controles/server.php';
                                         <div class="collapsible-body left-align grey lighten-3">
                                             <p><n>Localizacao:</n><?php echo " " . $patrimonio->getLocalizacao() . "  "; ?><a href="detalhesPat.php?msg=<?php echo $row['pat']; ?>" class="left-align">
                                                 <i class="material-icons tiny">border_color</i>
-                                            </a><br><n>Estado:</n> <?php echo $patrimonio->getEstado() ?></p>
-                                        <p><n>Descrição:</n> <br> <?php echo $patrimonio->getEstado() ?>
+                                            </a><br><n>Estado:</n> <?php echo $patrimonio->getEstado(); ?></p>
+                                            <p><n>Descrição:</n> <br> <?php echo $descricao->getDescricao(); ?>
                                             </p>
 
                                             <h5 class="left-align">Comentários:</h5>
@@ -145,12 +144,13 @@ include_once '../Controles/server.php';
                                                             if ($comentarios) {
                                                                 while ($comenta = $comentarios->fetch()) {
                                                                     $coment = new comentario_pat($comenta);
-                                                                    $user = new users($userPDO->selectUsersId($coment->getId_user()));
+                                                                    $resultUser = $userPDO->selectUsersId($coment->getId_user());
+                                                                    $user = new users($resultUser->fetch());
                                                                     ?>
                                                                     <div class="card col s12 grey lighten-2"></div>
                                                                     <p class="left-align">
                                                                         <?php
-                                                                        echo $coment->getHora() . " / " . $user->getNome(). "<br>" . $coment->getComentario() . ".<br>";
+                                                                        echo $coment->getHora() . " / " . $user->getNome() . "<br>" . $coment->getComentario() . ".<br>";
                                                                         ?>
                                                                     </p>
                                                                     <?php
@@ -162,7 +162,8 @@ include_once '../Controles/server.php';
                                                             <input class="comentario" type="text" class="col s10" name="comentario" id="comentario"/>
                                                             <label>Adicionar Comentário</label>
                                                         </div>
-                                                        <input class="idpatcoment"name="idpatcoment" value="<?php echo $patrimonio->getPat() ?>" type="text" hidden="true"/>
+                                                        <input class="idpatcoment"name="pat" value="<?php echo $patrimonio->getPat() ?>" type="text" hidden="true"/>
+                                                        <input class="iduser"name="id_user" value="<?php echo $_SESSION['id'] ?>" type="text" hidden="true"/>
                                                         <button type="submit"class="btn" name="btComentarLab" value="Resolvido"><i class="material-icons">arrow_forward</i></button>
                                                     </form>
 
@@ -180,10 +181,11 @@ include_once '../Controles/server.php';
                                             var dados = form.serialize();
                                             $.ajax({
                                                 type: 'POST',
-                                                url: "../Controles/server.php",
+                                                url: "../Controle/comentario_patControle.php?function=inserir",
                                                 data: dados,
-                                                success: function () {
-                                                    form.children(".bodydoreload").load("attpat.php?maq=" + form.children(".idpatcoment").val());
+                                                success: function (data) {
+                                                    alert(data);
+                                                    form.children(".bodydoreload").load("attpat.php?pat=" + form.children(".idpatcoment").val());
                                                     form.find(".comentario").val("");
                                                 }
                                             });
@@ -191,6 +193,10 @@ include_once '../Controles/server.php';
                                         });
                                     });
                                 </script><?php
+                            } else {
+                                ?>
+                                <p class="red-text">Nenhuma maquina encontrada!</p>
+                                <?php
                             }
                         } else {
                             ?>
@@ -236,10 +242,7 @@ include_once '../Controles/server.php';
 
     <script>
         $(document).ready(function () {
-            $('select').material_select();
-        });
-
-        $(document).ready(function () {
+            $('select').formSelect();
             $('.collapsible').collapsible();
         });
     </script>

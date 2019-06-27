@@ -20,7 +20,7 @@ if (realpath('./index.php')) {
 class UsersPDO{
     function inserirUsers() {
         $users = new users($_POST);
-        $con = new conexao();
+        $con = new conexaoPDO();
         $pdo = $con->getConexao();
         $stmt = $pdo->prepare('insert into Users values(default , :user , :password , :nome , :nivel);' );
 
@@ -44,7 +44,7 @@ class UsersPDO{
 
     public function selectUsers(){
             
-        $con = new conexao();
+        $con = new conexaoPDO();
         $pdo = $con->getConexao();
         $stmt = $pdo->prepare('select * from users ;');
         $stmt->execute();
@@ -59,7 +59,7 @@ class UsersPDO{
                     
     public function selectUsersId($id){
             
-        $con = new conexao();
+        $con = new conexaoPDO();
         $pdo = $con->getConexao();
         $stmt = $pdo->prepare('select * from users where id = :id;');
         $stmt->bindValue(':id', $id);
@@ -75,7 +75,7 @@ class UsersPDO{
                     
     public function selectUsersUser($user){
             
-        $con = new conexao();
+        $con = new conexaoPDO();
         $pdo = $con->getConexao();
         $stmt = $pdo->prepare('select * from users where user = :user;');
         $stmt->bindValue(':user', $user);
@@ -91,7 +91,7 @@ class UsersPDO{
                     
     public function selectUsersPassword($password){
             
-        $con = new conexao();
+        $con = new conexaoPDO();
         $pdo = $con->getConexao();
         $stmt = $pdo->prepare('select * from users where password = :password;');
         $stmt->bindValue(':password', $password);
@@ -107,7 +107,7 @@ class UsersPDO{
                     
     public function selectUsersNome($nome){
             
-        $con = new conexao();
+        $con = new conexaoPDO();
         $pdo = $con->getConexao();
         $stmt = $pdo->prepare('select * from users where nome = :nome;');
         $stmt->bindValue(':nome', $nome);
@@ -123,7 +123,7 @@ class UsersPDO{
                     
     public function selectUsersNivel($nivel){
             
-        $con = new conexao();
+        $con = new conexaoPDO();
         $pdo = $con->getConexao();
         $stmt = $pdo->prepare('select * from users where nivel = :nivel;');
         $stmt->bindValue(':nivel', $nivel);
@@ -137,7 +137,7 @@ class UsersPDO{
     
  
     public function updateUsers(Users $Users){        
-        $con = new conexao();
+        $con = new conexaoPDO();
         $pdo = $con->getConexao();
         $stmt = $pdo->prepare('updateusersset user = :user , password = :password , nome = :nome , nivel = :nivel where id = :id;');
              
@@ -146,7 +146,7 @@ class UsersPDO{
     }            
     
     public function deleteUsers($definir){
-        $con = new conexao();
+        $con = new conexaoPDO();
         $pdo = $con->getConexao();
         $stmt = $pdo->prepare('delete from users where definir = :definir ;');
         $stmt->bindValue(':definir', $definir);

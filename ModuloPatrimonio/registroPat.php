@@ -12,13 +12,9 @@ if (!isset($_SESSION['id'])) {
 
 <head>
     <meta charset="utf-8"> 
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="stylesheet" href="../css/custom.css">
-    <link rel="icon" href="../img/favicon.ico" type="image/ico">
-    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
+    <?php
+    include_once '../Base/header.php';
+    ?>
     <title>Registro Patrimônio</title>
 
 </head>
@@ -26,11 +22,15 @@ if (!isset($_SESSION['id'])) {
 
     <?php
     include_once '../Modelos/navGeral.php';
+    
+    include_once '../Controle/patrimonioPDO.php';
+    include_once '../Modelo/Patrimonio.php';
+    include_once '../Modelo/Descricao.php';
+    include_once '../Controle/descricaoPDO.php';
+    $descPDO = new DescricaoPDO;
     ?>
     <script type="text/javascript">
-        $(document).ready(function () {
-            $(".button-collapse").sideNav();
-        });
+       
     </script>
     <main>
         <div class="row"></div>
@@ -38,7 +38,7 @@ if (!isset($_SESSION['id'])) {
             <div class="container  col s6 push-s3 center hide-on-med-and-down">
                 <div class="card col s12  grey lighten-2" style="padding: 15px">
                     <h4 class=" col s12 card  grey lighten-2 z-depth-3" style="padding: 15px">Cadastrar Patrimônio</h4>
-                    <form class="input-field col s12" method="post" action="../Controles/server.php" id="formulario">
+                    <form class="input-field col s12" method="post" action="../Controle/patrimonioControle.php?function=inserirPatrimonio" id="formulario">
                         <div class="input-field">
                             <div class="row">
                                 <div class="input-field col s6">
@@ -52,16 +52,16 @@ if (!isset($_SESSION['id'])) {
                             </div>
                             <div class="row">
                                 <div class="input-field col s4">
-                                    <select name="desc" id="selecionador">  
-                                        <option value="">Nova</option>
+                                    <select name="id_desc" id="selecionador">  
+                                        <option value="0">Nova</option>
                                         <?php
-                                        $d = new dados();
-                                        $result = $d->buscar_descs();
+                                         $result = $descPDO->selectDescricao();
 
-                                        if (mysqli_num_rows($result) > 0) {
-                                            while ($row = mysqli_fetch_assoc($result)) {
+                                        if ($result) {
+                                            while ($row = $result->fetch()) {
+                                                $descricao = new descricao($row);
                                                 ?>
-                                                <option value="<?php echo $row["id"]; ?>"><?php echo $row["nome"]; ?></option>
+                                                <option data="<?php echo $descricao->getDescricao(); ?>" value="<?php echo $descricao->getId(); ?>"><?php echo $descricao->getNome(); ?></option>
                                                 <?php
                                             }
                                         }
@@ -152,19 +152,19 @@ if (!isset($_SESSION['id'])) {
                                 }
                                 $.ajax({
                                     type: 'POST',
-                                    url: '../Controles/server.php',
+                                    url: '../Controle/patrimonioControle.php?function=inserir',
                                     data: dados,
                                     success: function (dado) {
                                         //$('#modal1').modal('open');
                                         if (dado) {
-                                            alert(dado);
+                                            alert("Inserido!");
                                             $("#pat").val("");
                                         $("#nome").val("");
                                         $("#nomedesc").val("");
                                         $("#formulario textarea").val("");
                                         $("#pat").focus();
                                         } else {
-                                            alert(dado);
+                                            alert("Comportamento inesperado do sistema!");
                                         }
                                         
                                     }
@@ -194,7 +194,7 @@ if (!isset($_SESSION['id'])) {
     </main>
     <script>
         $(document).ready(function () {
-            $('select').material_select();
+             $('select').formSelect();
         });
     </script>
     <script type="text/javascript">

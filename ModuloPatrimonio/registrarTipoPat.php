@@ -33,7 +33,7 @@ if (!isset($_SESSION['id'])) {
             <div class="container  col s4 push-s4 center hide-on-med-and-down">
                 <div class="col s12  grey lighten-2" style="padding: 15px">
                     <h4 class=" col s12  grey lighten-2 " style="padding: 15px">Criar Descrição Geral</h4>
-                    <form class="input-field col s12" method="post" action="../Controles/server.php">
+                    <form class="input-field col s12" method="post" action="../Controle/descricaoControle.php?function=inserirDescricao">
                         <div class="input-field">
                             <div class="row">
                                 <div class="input-field col s6">
