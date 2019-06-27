@@ -156,17 +156,17 @@ if (!isset($_SESSION['id'])) {
                         </div>
                     </div>
                     <div class="row">
-                        <a href="./Buscas/consultarPat.php">
+                        <a href="./ModuloPatrimonio/consultarPat.php">
                             <button class="btn-large black col s10 offset-s1 center-align z-depth-5">Patrimônio<i class="inline-icon material-icons">arrow_forward</i></button>
                         </a>
                     </div>
                     <div class="row">
-                        <a href="./Registros/registroPat.php">
+                        <a href="./ModuloPatrimonio/registroPat.php">
                             <button class="btn-large black col s10 offset-s1 center-align z-depth-5">Registrar Patrimônio<i class="inline-icon material-icons">arrow_forward</i></button>
                         </a>
                     </div>
                     <div class="row">
-                        <a href="./Registros/registrarTipoPat.php">
+                        <a href="./ModuloPatrimonio/registrarTipoPat.php">
                             <button class="btn-large black col s10 offset-s1 center-align z-depth-5">Registrar Descrição Geral<i class="inline-icon material-icons">arrow_forward</i></button>
                         </a>
                     </div>
@@ -264,17 +264,17 @@ if (!isset($_SESSION['id'])) {
                         </div>
                     </div>
                     <div class="row">
-                        <a href="registroPat.php">
+                        <a href="./ModuloPatrimonio/registroPat.php">
                             <button class="btn-large col s10 offset-s1 center-align">Registrar Patrimônio<i class="inline-icon material-icons">arrow_forward</i></button>
                         </a>
                     </div>
                     <div class="row">
-                        <a href="consultarPat.php">
+                        <a href="ModuloPatrimonio/consultarPat.php">
                             <button class="btn-large col s10 offset-s1 center-align">Consultar Patrimônio<i class="inline-icon material-icons">arrow_forward</i></button>
                         </a>
                     </div>
                     <div class="row">
-                        <a href="registrarTipoPat.php">
+                        <a href="ModuloPatrimonio/registrarTipoPat.php">
                             <button class="btn-large col s10 offset-s1 center-align">Registrar Des/ Geral<i class="inline-icon material-icons">arrow_forward</i></button>
                         </a>
                     </div>

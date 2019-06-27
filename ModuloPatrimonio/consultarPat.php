@@ -9,14 +9,9 @@ include_once '../Controles/server.php';
 ?>
 <!DOCTYPE html>
 <head>
-    <meta charset="utf-8"> 
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="stylesheet" href="../css/custom.css">
-    <link rel="icon" href="../img/favicon.ico" type="image/ico">
-    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
+    <?php
+    include_once '../Base/header.php';
+    ?>
     <title>Ciet - Consulta Patrimônio</title>
 </head>
 
@@ -42,7 +37,8 @@ include_once '../Controles/server.php';
 
                 </div>
                 <div class="row">
-                    <form class="input-field col s6 offset-s3" method="post" action="consultarPat.php">
+                    <form class="input-field col s6 offset-s3" method="post" action="consultarPat.php?function=consultagv
+                          ">
                         <div class="input-field col s4">
                             <select id="selecionador" name="local"> 
                                 <option value="">Todos</option>
@@ -92,6 +88,15 @@ include_once '../Controles/server.php';
                 <div class="row" id="busca">
                     <ul class="bordered striped collapsible popout grey lighten-2 left-align">
                         <?php
+                        include_once '../Modelo/Patrimonio.php';
+                        include_once '../Modelo/Users.php';
+                        include_once '../Controle/patrimonioPDO.php';
+                        include_once '../Controle/usersPDO.php';
+                        include_once '../Controle/comentario_patPDO.php';
+                        include_once '../Modelo/Comentario_pat.php';
+                        $patpdo = new PatrimonioPDO();
+                        $comPDO = new Comentario_patPDO();
+                        $userPDO = new UsersPDO();
                         if (isset($_POST['btBuscarPat'])) {
                             if ($_POST['local'] == "SalaProfessores") {
                                 $_POST['local'] = 'Sala Professores';
@@ -104,16 +109,17 @@ include_once '../Controles/server.php';
                             }
                             $result = $d->buscarPats($_POST['local'], $_POST['nome']);
                         } else {
-                            $result = $d->selectPats();
+                            $result = $patpdo->selectPatrimonio();
                         }
                         if ($result) {
-                            if (mysqli_num_rows($result) > 0) {
-                                while ($row = mysqli_fetch_assoc($result)) {
+                            if ($result->rowCount() > 0) {
+                                while ($row = $result->fetch()) {
+                                    $patrimonio = new patrimonio($row);
                                     ?>
                                     <li class="collection-item">
                                         <div class="collapsible-header grey lighten-2">
                                             <div><span style=":first-letter{text-transform: uppercase}"><?php
-                                                    echo "<n>Patrimônio:</n> " . $row['pat'] . " / " . $row['nome'];
+                                                    echo "<n>Patrimônio:</n> " . $patrimonio->getPat() . " / " . $patrimonio->getNome();
                                                     ?>
                                                 </span>
                                                 <div class="secondary-content">
@@ -122,10 +128,10 @@ include_once '../Controles/server.php';
                                             </div>
                                         </div>
                                         <div class="collapsible-body left-align grey lighten-3">
-                                            <p><n>Localizacao:</n><?php echo " " . $row['localizacao'] . "  "; ?><a href="detalhesPat.php?msg=<?php echo $row['pat']; ?>" class="left-align">
+                                            <p><n>Localizacao:</n><?php echo " " . $patrimonio->getLocalizacao() . "  "; ?><a href="detalhesPat.php?msg=<?php echo $row['pat']; ?>" class="left-align">
                                                 <i class="material-icons tiny">border_color</i>
-                                            </a><br><n>Estado:</n> <?php echo $row['estado'] ?></p>
-                                            <p><n>Descrição:</n> <br> <?php echo $row['descricao'] ?>
+                                            </a><br><n>Estado:</n> <?php echo $patrimonio->getEstado() ?></p>
+                                        <p><n>Descrição:</n> <br> <?php echo $patrimonio->getEstado() ?>
                                             </p>
 
                                             <h5 class="left-align">Comentários:</h5>
@@ -135,14 +141,16 @@ include_once '../Controles/server.php';
                                                     <form class="formulario" class="input-field col s12" method="post" action="../Controles/server.php">
                                                         <div class="bodydoreload">
                                                             <?php
-                                                            $comentarios = $d->query("select c.*, u.nome from comentario_pat as c, users as u where u.id = c.id_user and c.pat ='" . $row['pat'] . "';");
+                                                            $comentarios = $comPDO->selectComentario_patPat($patrimonio->getPat());
                                                             if ($comentarios) {
-                                                                while ($coment = mysqli_fetch_assoc($comentarios)) {
+                                                                while ($comenta = $comentarios->fetch()) {
+                                                                    $coment = new comentario_pat($comenta);
+                                                                    $user = new users($userPDO->selectUsersId($coment->getId_user()));
                                                                     ?>
                                                                     <div class="card col s12 grey lighten-2"></div>
                                                                     <p class="left-align">
                                                                         <?php
-                                                                        echo $coment['hora'] . " / " . $coment['nome'] . "<br>" . $coment['comentario'] . ".<br>";
+                                                                        echo $coment->getHora() . " / " . $user->getNome(). "<br>" . $coment->getComentario() . ".<br>";
                                                                         ?>
                                                                     </p>
                                                                     <?php
@@ -154,7 +162,7 @@ include_once '../Controles/server.php';
                                                             <input class="comentario" type="text" class="col s10" name="comentario" id="comentario"/>
                                                             <label>Adicionar Comentário</label>
                                                         </div>
-                                                        <input class="idpatcoment"name="idpatcoment" value="<?php echo $row['pat'] ?>" type="text" hidden="true"/>
+                                                        <input class="idpatcoment"name="idpatcoment" value="<?php echo $patrimonio->getPat() ?>" type="text" hidden="true"/>
                                                         <button type="submit"class="btn" name="btComentarLab" value="Resolvido"><i class="material-icons">arrow_forward</i></button>
                                                     </form>
 
@@ -163,7 +171,7 @@ include_once '../Controles/server.php';
 
                                         </div>
                                     </li>
-                                    <?php }
+                                <?php }
                                 ?>
                                 <script>
                                     $(document).ready(function () {
@@ -175,7 +183,7 @@ include_once '../Controles/server.php';
                                                 url: "../Controles/server.php",
                                                 data: dados,
                                                 success: function () {
-                                                    form.children(".bodydoreload").load("attpat.php?maq="+form.children(".idpatcoment").val());
+                                                    form.children(".bodydoreload").load("attpat.php?maq=" + form.children(".idpatcoment").val());
                                                     form.find(".comentario").val("");
                                                 }
                                             });
@@ -194,20 +202,20 @@ include_once '../Controles/server.php';
                 </div>
                 <script>
                     $(document).ready(function () {
-                        $("#linkexportapdf").click(function(){
+                        $("#linkexportapdf").click(function () {
                             $('#busca').text("");
                             $('#busca').load("../Relatorios/teste.php");
-                            
+
                         });
-                        
+
                         $('#selecionador').change(consultar);
 
                         $('#nome').keyup(consultar);
                         function consultar() {
                             $("#linkexportapdf").removeAttr("href");
-                            $("#linkexportapdf").attr("href","../Relatorios/exportarPats.php?local="+ $('#selecionador').val() + "&nome=" + $('#nome').val());
+                            $("#linkexportapdf").attr("href", "../Relatorios/exportarPats.php?local=" + $('#selecionador').val() + "&nome=" + $('#nome').val());
                             $("#linkexportapdfetiquetas").removeAttr("href");
-                            $("#linkexportapdfetiquetas").attr("href","../Relatorios/exportapatetiqueta.php?local="+ $('#selecionador').val() + "&nome=" + $('#nome').val());
+                            $("#linkexportapdfetiquetas").attr("href", "../Relatorios/exportapatetiqueta.php?local=" + $('#selecionador').val() + "&nome=" + $('#nome').val());
                             $('#busca').text("");
                             $('#busca').load("./consulta-pat-dinamica.php?localizacao=" + $('#selecionador').val() + "&nome=" + $('#nome').val());
                         }
@@ -220,7 +228,7 @@ include_once '../Controles/server.php';
             <!--Mobile-->
 
 
-            
+
 
         </div>
 
